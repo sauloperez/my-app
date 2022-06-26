@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import * as Notifications from 'expo-notifications';
 import { StyleSheet, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import registerForPushNotificationsAsync from './lib/pushNotifications';
@@ -17,7 +18,18 @@ export default function App() {
 
   useEffect(() => {
     registerForPushNotificationsAsync()
+    Notifications.addNotificationReceivedListener(_handleNotification);
+    Notifications.addNotificationResponseReceivedListener(_handleNotificationResponse);
   }, []);
+
+  const _handleNotification = notification => {
+    console.log({ notification: notification });
+  };
+
+  const _handleNotificationResponse = response => {
+    console.log('Push notification has been interacted with');
+    console.log(response);
+  };
 
   return (
     <WebView
