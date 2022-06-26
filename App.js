@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
-import injectCustomJavaScript from './lib/injectCustomJavaScript';
+import registerForPushNotificationsAsync from './lib/pushNotifications';
 
 export default function App() {
   let webview;
@@ -13,6 +13,10 @@ export default function App() {
     };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
+  }, []);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
   }, []);
 
   return (
