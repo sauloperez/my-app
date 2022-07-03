@@ -3,6 +3,7 @@ import * as Notifications from 'expo-notifications';
 import { StyleSheet, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import registerForPushNotificationsAsync from './lib/pushNotifications';
+import Constants from 'expo-constants';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -12,7 +13,16 @@ Notifications.setNotificationHandler({
   }),
 });
 
+const baseUrl = () => {
+  const { releaseChannel } = Constants.manifest;
+
+  return (releaseChannel === 'staging') ?
+    'https://staging.timeoverflow.org' :
+    'https://www.timeoverflow.org';
+}
+
 export default function App() {
+  const [currentUrl, setCurrentUrl] = useState(baseUrl());
   const [expoPushToken, setExpoPushToken] = useState('');
   const notificationListener = useRef();
   const responseListener = useRef();
@@ -35,11 +45,13 @@ export default function App() {
 
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       console.log(notification);
-      console.log(notification.request.content);
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
+      console.log(response.notification.request.content.data);
+      const data = response.notification.request.content.data;
+      setCurrentUrl(`${baseUrl()}${data.url}`);
     });
 
     return () => {
@@ -52,7 +64,7 @@ export default function App() {
     <WebView
       ref={(ref) => (webview = ref)}
       style={styles.container}
-      source={{ uri: 'https://www.timeoverflow.org' }}
+      source={{ uri: currentUrl }}
       scalesPageToFit={false}
     />
   );
