@@ -1,10 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { StyleSheet, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import registerForPushNotificationsAsync from './lib/pushNotifications';
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function App() {
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
   let webview;
 
   useEffect(() => {
@@ -17,19 +29,24 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-    Notifications.addNotificationReceivedListener(_handleNotification);
-    Notifications.addNotificationResponseReceivedListener(_handleNotificationResponse);
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    console.log(expoPushToken);
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      console.log(notification);
+      console.log(notification.request.content);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
-
-  const _handleNotification = notification => {
-    console.log({ notification: notification });
-  };
-
-  const _handleNotificationResponse = response => {
-    console.log('Push notification has been interacted with');
-    console.log(response);
-  };
 
   return (
     <WebView
