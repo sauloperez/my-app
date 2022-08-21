@@ -64,8 +64,6 @@ export default function App() {
     };
   }, []);
 
-  console.log(Constants.statusBarHeight);
-
   return (
     <>
       <WebView
