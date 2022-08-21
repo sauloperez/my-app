@@ -4,6 +4,10 @@ import { StyleSheet, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import registerForPushNotificationsAsync from './lib/pushNotifications';
 import Constants from 'expo-constants';
+import { StatusBar } from 'expo-status-bar';
+
+// matches the background color of the webapp's navbar
+const navbarStaticTopColor = "rgba(39,151,175,0.9)";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -60,45 +64,23 @@ export default function App() {
     };
   }, []);
 
+  console.log(Constants.statusBarHeight);
+
   return (
-    <WebView
-      ref={(ref) => (webview = ref)}
-      style={styles.container}
-      source={{ uri: currentUrl }}
-      scalesPageToFit={false}
-    />
+    <>
+      <WebView
+        ref={(ref) => (webview = ref)}
+        style={styles.container}
+        source={{ uri: currentUrl }}
+        scalesPageToFit={false}
+      />
+      <StatusBar style="light" backgroundColor={navbarStaticTopColor} />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: Constants.statusBarHeight,
   },
-  logo: {
-    width: 305,
-    height: 159,
-    marginBottom: 10,
-  },
-  instructions: {
-    color: '#888',
-    fontSize: 18,
-    marginHorizontal: 15,
-  },
-  button: {
-    backgroundColor: 'blue',
-    padding: 20,
-    borderRadius: 5,
-  },
-  buttonText: {
-    fontSize: 20,
-    color: '#fff',
-  },
-  thumbnail: {
-    width: 300,
-    height: 300,
-    resizeMode: "contain"
-  }
 });
