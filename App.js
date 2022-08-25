@@ -31,14 +31,25 @@ export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
 
-  let webview;
+  const webViewRef = useRef(null);
 
   useEffect(() => {
     const backAction = () => {
-      webview.goBack();
-      return true;
+      console.log("Back button pressed");
+
+      try {
+        webViewRef.current?.goBack()
+      }
+      catch (err) {
+          console.log("[handleBackButtonPress] Error : ", err.message)
+      }
+      finally {
+        return true;
+      }
     };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
     return () => backHandler.remove();
   }, []);
 
@@ -66,13 +77,13 @@ export default function App() {
 
   return (
     <>
+      <StatusBar style="light" backgroundColor={navbarStaticTopColor} />
       <WebView
-        ref={(ref) => (webview = ref)}
+        ref={ref => webViewRef.current = ref}
         style={styles.container}
         source={{ uri: currentUrl }}
         scalesPageToFit={false}
       />
-      <StatusBar style="light" backgroundColor={navbarStaticTopColor} />
     </>
   );
 }
