@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
+import * as WebBrowser from 'expo-web-browser';
 import { StyleSheet, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import registerForPushNotificationsAsync from './lib/pushNotifications';
@@ -75,6 +76,18 @@ export default function App() {
     };
   }, []);
 
+  const handleStateChange = (navState) => {
+    console.log(navState);
+    const { url, canGoBack } = navState;
+
+    if (!url.includes('timeoverflow')) {
+      if (canGoBack) {
+        webViewRef.current?.goBack()
+      }
+      WebBrowser.openBrowserAsync(url)
+    }
+  };
+
   return (
     <>
       <StatusBar style="light" backgroundColor={navbarStaticTopColor} />
@@ -83,6 +96,7 @@ export default function App() {
         style={styles.container}
         source={{ uri: currentUrl }}
         scalesPageToFit={false}
+        onNavigationStateChange={handleStateChange}
       />
     </>
   );
