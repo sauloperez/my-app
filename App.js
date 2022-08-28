@@ -20,6 +20,9 @@ Notifications.setNotificationHandler({
 
 const baseUrl = () => {
   const { releaseChannel } = Constants.manifest;
+  console.log("Constants.manifest = ");
+  console.log(Constants.manifest);
+  console.log("release channel = " + releaseChannel);
 
   return (releaseChannel === 'staging') ?
     'https://staging.timeoverflow.org' :
