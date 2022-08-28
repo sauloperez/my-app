@@ -79,8 +79,7 @@ export default function App() {
     };
   }, []);
 
-  const handleStateChange = (navState) => {
-    console.log(navState);
+  const handleExternalLinks = (navState) => {
     const { url, canGoBack } = navState;
 
     if (!url.includes('timeoverflow')) {
@@ -89,6 +88,22 @@ export default function App() {
       }
       WebBrowser.openBrowserAsync(url)
     }
+  };
+
+  const handleLoginPage = (webview) => {
+    webview?.injectJavaScript("$('#user_remember_me').prop('checked', true);")
+  };
+
+  const injectCustomJavaScript = (url) => {
+    if (/sign_in|login/.test(url)) {
+      handleLoginPage(webViewRef.current);
+    }
+  };
+
+  const handleStateChange = (navState) => {
+    console.log(navState);
+    injectCustomJavaScript(navState.url);
+    handleExternalLinks(navState);
   };
 
   return (
